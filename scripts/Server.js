@@ -6,9 +6,10 @@
  * @param {!string} cellRange - cell range specified as A1 notation.
  * @return {!Range} the range at the location designated.
  */
-function getRange_(spreadsheetId, cellRange) {
+function getRange_(spreadsheetId, sheetName, cellRange) {
   var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
-  var sheet = spreadsheet.getSheets()[0];
+  //var sheet = spreadsheet.getSheets()[0];
+  var sheet = spreadsheet.getSheetByName(sheetName);
   return sheet.getRange(cellRange);
 }
 
@@ -20,18 +21,17 @@ function getRange_(spreadsheetId, cellRange) {
  * @param {!string} spreadsheetId - spreadsheet ID to get sheets list.
  * @return {!integer} an integer of start row position.
  */
-function getStartRow(name, spreadsheetId) {
+function getStartRow(name, spreadsheetId, campaign) {
   var row_from = 1;
   var ss = SpreadsheetApp.openById(spreadsheetId);
-  var sheet = ss.getSheets()[0];
-  
+  var sheet = ss.getSheetByName(campaign);
+ 
   for(row_from = 1; row_from < sheet.getMaxRows(); row_from++){
     var range = sheet.getRange(row_from, 1);
 
     var values = range.getValues();
 
-    if (values[0][0] === name){
-//      console.log("found: " + values[0][0]);
+    if (values[0][0].toUpperCase() == name){
       return row_from;
     }
   }
@@ -46,16 +46,16 @@ function getStartRow(name, spreadsheetId) {
  * @param {!string} spreadsheetId - spreadsheet ID to get sheets list.
  * @return {!integer} an integer of end row position.
  */
-function getEndRow(name, spreadsheetId) {
-  var start_row = getStartRow(name, spreadsheetId);
-  
+function getEndRow(name, spreadsheetId, campaign) {
+  var start_row = getStartRow(name, spreadsheetId, campaign);
+    
   var ss = SpreadsheetApp.openById(spreadsheetId);
-  var sheet = ss.getSheets()[0];
+  var sheet = ss.getSheetByName(campaign);
   
   for(var i = start_row; i < sheet.getMaxRows(); i++){
     var range = sheet.getRange(i, 1);
     var values = range.getValues();
-    if (values[0][0] === name){
+    if (values[0][0].toUpperCase() == name){
       start_row+=1;
     }    
   }
@@ -69,13 +69,11 @@ function getEndRow(name, spreadsheetId) {
  * @param {!integer} row - row number of content to be returned.
  * @return {!Array<string>}  an array of all the row data.
  */
-function getRow(spreadsheetId, row) {
-//  console.log("server getRow: "+row);
+function getRow(spreadsheetId, row, campaign) { 
   var ss = SpreadsheetApp.openById(spreadsheetId);
-  var sheet = ss.getSheets()[0];
-  var range = sheet.getRange(row, 2, 1, 7);
+  var sheet = ss.getSheetByName(campaign); 
+  var range = sheet.getRange(row, 2, 1, 8);
   var values = range.getValues();
-//  console.log(values);
   return values;
 }
 
@@ -90,9 +88,7 @@ function getRow(spreadsheetId, row) {
  * @param {!string} cellRange - cell range specified as A1 natation.
  * @param {!string} value - new cell value.
  */
-function setCellValue(spreadsheetId, cellRange, value) {
-  var range = getRange_(spreadsheetId, cellRange);
-//  console.log("server range:" + cellRange);
-//  console.log("server value: " + value);
+function setCellValue(spreadsheetId, sheetName, cellRange, value) {
+  var range = getRange_(spreadsheetId, sheetName, cellRange);
   range.setValue(value);
 }
